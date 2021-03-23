@@ -31,12 +31,16 @@ public class BitmapShadorView extends View {
     private final Bitmap bitmap;
     private Matrix matrix;
     private int viewSize;
+    private final int bitmapWidth;
+    private final int bitmapHeight;
 
     public BitmapShadorView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         paint = new Paint();
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test1);
+        bitmapWidth = bitmap.getWidth();
+        bitmapHeight = bitmap.getHeight();
         bitmapShader = new BitmapShader(bitmap, TileMode.CLAMP, TileMode.CLAMP);
         paint.setShader(bitmapShader);
         matrix = new Matrix();
@@ -55,13 +59,23 @@ public class BitmapShadorView extends View {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        //获取缩放还是放大值
+        float scale = (float) viewSize / Math.min(bitmapHeight, bitmapWidth);
+        matrix.setScale(scale, scale);
+        //平移至图片中心
+        float dx = (viewSize - bitmapWidth * scale) * 0.5f;
+        float dy = (viewSize - bitmapHeight * scale) * 0.5f;
+        matrix.postTranslate(dx, dy);
+
+        bitmapShader.setLocalMatrix(matrix);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        float scale = viewSize * 1.0f / Math.min(bitmap.getWidth(), bitmap.getHeight());
-        Log.e("HLP", "缩放比:" + scale);
-        matrix.setScale(scale, scale);
-        bitmapShader.setLocalMatrix(matrix);
 
         float radius = viewSize / 2f;
         canvas.drawCircle(radius, radius, radius, paint);
