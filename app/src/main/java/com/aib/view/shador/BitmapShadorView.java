@@ -1,23 +1,14 @@
-package com.aib.shador;
+package com.aib.view.shador;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ComposeShader;
-import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.RadialGradient;
-import android.graphics.Rect;
 import android.graphics.Shader.TileMode;
-import android.graphics.SweepGradient;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -41,7 +32,7 @@ public class BitmapShadorView extends View {
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test1);
         bitmapWidth = bitmap.getWidth();
         bitmapHeight = bitmap.getHeight();
-        bitmapShader = new BitmapShader(bitmap, TileMode.CLAMP, TileMode.CLAMP);
+        bitmapShader = new BitmapShader(bitmap, TileMode.REPEAT, TileMode.REPEAT);
         paint.setShader(bitmapShader);
         matrix = new Matrix();
     }
@@ -63,7 +54,8 @@ public class BitmapShadorView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
 
         //获取缩放还是放大值
-        float scale = (float) viewSize / Math.min(bitmapHeight, bitmapWidth);
+//        float scale = (float) viewSize / Math.min(bitmapHeight, bitmapWidth);
+        float scale = 0.5f;
         matrix.setScale(scale, scale);
         //平移至图片中心
         float dx = (viewSize - bitmapWidth * scale) * 0.5f;
@@ -77,6 +69,7 @@ public class BitmapShadorView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        //画圆
         float radius = viewSize / 2f;
         canvas.drawCircle(radius, radius, radius, paint);
     }

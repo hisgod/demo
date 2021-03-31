@@ -1,19 +1,20 @@
 package com.aib.demo
 
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
+import android.graphics.PixelFormat
 import android.os.Bundle
-import android.util.Log
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.WindowManager
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
 import com.aib.demo.databinding.ActivityMainBinding
-import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.viewholder.BaseViewHolder
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.activity_main.*
+import com.blankj.utilcode.util.ToastUtils
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +24,10 @@ class MainActivity : AppCompatActivity() {
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
         binding.view = this
+
+        ToastUtils.getDefaultMaker().show(ImageView(this).apply {
+            setImageResource(R.mipmap.ic_launcher)
+        })
     }
 
     fun show() {

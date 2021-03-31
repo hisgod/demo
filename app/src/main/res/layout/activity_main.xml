@@ -16,8 +16,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@{@color/colorAccent}"
             android:gravity="center"
-            android:onClick="@{_->view.show()}" />
+            android:onClick="@{_->view.show()}"
+            android:text="文本显示啊"
+            android:textSize="28sp" />
     </RelativeLayout>
 </layout>

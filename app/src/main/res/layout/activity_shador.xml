@@ -4,9 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.aib.shador.ShadorActivity">
+    tools:context="com.aib.view.shador.ShadorActivity">
 
-    <com.aib.shador.BitmapShadorView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--    <com.aib.view.shador.BitmapShadorView-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content" />-->
+    <com.aib.view.shador.LinearGradientView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="你是我触碰不到的风醒不来的梦"
+        android:textSize="25sp" />
 </RelativeLayout>
