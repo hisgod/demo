@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import com.aib.demo.R;
 import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.SpanUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -29,10 +30,10 @@ public class ExpandTextView extends AppCompatTextView {
     private float[] widths = new float[0];
     private TextPaint paint;
     private int breakText;
-    private int line = 3;
-
-    //是否展开
-    private boolean isExpand = false;
+    private int defaultLine = 3;
+    private int currentLine = 0;
+    private boolean isCalculation = false;
+    private Paint tipPaint;
 
     public ExpandTextView(@NonNull @NotNull Context context) {
         super(context);
@@ -42,63 +43,65 @@ public class ExpandTextView extends AppCompatTextView {
         super(context, attrs);
         downAnimation();
 
-        //获取画笔
+        //文本画笔
         paint = getPaint();
+        paint.setColor(getTextColors().getDefaultColor());
+        paint.setAntiAlias(true);
 
-        //注意此处showText后+ " "主要是为了占位
-//        SpannableString ss = new SpannableString(getText());
-//        int len = ss.length();
-//        //图片
-//        Drawable d = ContextCompat.getDrawable(context, (R.mipmap.ic_down));
-//        d.setBounds(10, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-//        //构建ImageSpan
-//        ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
-//        ss.setSpan(span, len - 1, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-//        setText(ss);
+        //指示器画笔
+        tipPaint = new Paint();
 
+        setMaxLines(defaultLine);
+//        setMaxLines(1);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //折叠时候字数长度
-        int foldNum = 0;
-        //提示Icoon区域的宽
-        float tipWidth = getWidth() - bitmap.getWidth() * 2;
-        //提示Iocn区域的高
-        float tipHeight = getHeight() - (Math.max(measureTextHeight(paint), bitmap.getHeight()) - Math.min(measureTextHeight(paint), bitmap.getHeight()));
+        if (getLineCount() <= defaultLine) {//如果小于等于3行，直接绘制
+            super.onDraw(canvas);
+        } else {//如果大于3行，自定义绘制方式
 
-        LogUtils.e("总字数：" + getText().length());
+            float tipWidth = getWidth() - bitmap.getWidth() - getPaddingRight();
+            float tipHeight = getHeight() - bitmap.getHeight() / 2 - getLineHeight() / 2;
 
-        int end;
-        int start = 0;
-        for (int i = 0; i < getLineCount(); i++) {
-            end = getLayout().getLineEnd(i);
-            CharSequence lineText = getText().subSequence(start, end); //指定行的内容
-            start = end;
-
-            if (i == getLineCount() - 1) {//如果是最后一行
-                if (lineText.length() == 0) {
-                    return;
-                }
-                breakText = paint.breakText(lineText, 0, lineText.length(), true, tipWidth, widths);
-                /*if (!isExpand) {
-                    lineText = lineText.subSequence(0, breakText - 1);
-                    lineText += "...";
-                }*/
-            } else {//不是最后一行，按照每行的宽度
-                breakText = lineText.length();
+            if (currentLine == 0) {
+                currentLine = getLineCount();
             }
 
-            foldNum += breakText;
-            LogUtils.e("每行字数：" + breakText);
-            //绘制每一行的文本
-            canvas.drawText(lineText, 0, breakText, 0, measureTextHeight(paint) + getLineHeight() * i , paint);
-        }
+            int end;
+            int start = 0;
+            for (int i = 0; i < getLineCount(); i++) {
+                end = getLayout().getLineEnd(i);
+                CharSequence lineText = getText().subSequence(start, end); //指定行的内容
+                start = end;
 
-        //绘制提示Icon
-        if (foldNum == getText().length() && getLineCount() <= line)
-            return;
-        canvas.drawBitmap(bitmap, tipWidth, tipHeight, paint);
+                if (i == 2) {//第3行
+                    if (getMaxLines() == defaultLine) {//折叠，显示指示器
+                        breakText = paint.breakText(lineText, 0, lineText.length(), true, tipWidth, widths);
+                    } else {  //展开，显示正常文本
+                        breakText = lineText.length();
+                    }
+                } else if (i == getLineCount() - 1) {//最后一行
+                    float measureText = paint.measureText(lineText.toString());
+                    if (measureText == getWidth()) {//显示全部内容，并且需要增加多一行显示指示器
+                        breakText = lineText.length();
+                        if (!isCalculation) {//保证只被执行1次
+                            currentLine += 1;
+                            isCalculation = true;
+                        }
+                    } else {//显示部分内容+指示器
+                        breakText = paint.breakText(lineText, 0, lineText.length(), true, tipWidth, widths);
+                    }
+                } else {
+                    breakText = lineText.length();
+                }
+
+                //绘制每一行的文本
+                canvas.drawText(lineText, 0, breakText, getPaddingLeft(), getLineHeight() - 5 + getLineHeight() * i, paint);
+            }
+
+            canvas.drawBitmap(bitmap, tipWidth, tipHeight, tipPaint);
+        }
     }
 
     @Override
@@ -106,14 +109,22 @@ public class ExpandTextView extends AppCompatTextView {
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
                 int maxLines = getMaxLines();
-                if (maxLines == Integer.MAX_VALUE) {//折叠
-                    isExpand = false;
-                    downAnimation();
-                    setMaxLines(line);
-                } else {//展开
-                    isExpand = true;
-                    upAnimation();
-                    setMaxLines(Integer.MAX_VALUE);
+                if (getLineCount() <= defaultLine) {//<=3行
+                    if (maxLines == defaultLine) {
+                        upAnimation();
+                        setMaxLines(Integer.MAX_VALUE);
+                    } else {
+                        downAnimation();
+                        setMaxLines(defaultLine);
+                    }
+                } else {//大于3行
+                    if (maxLines == defaultLine) {
+                        upAnimation();
+                        setLines(currentLine);
+                    } else {
+                        downAnimation();
+                        setLines(defaultLine);
+                    }
                 }
                 break;
         }
@@ -128,18 +139,5 @@ public class ExpandTextView extends AppCompatTextView {
     //加载箭头向下的Icon
     private void downAnimation() {
         bitmap = ImageUtils.getBitmap(R.mipmap.ic_down);
-    }
-
-    /**
-     * 测量文字的高度
-     */
-    public float measureTextHeight(Paint paint) {
-        float height = 0;
-        if (null == paint) {
-            return height;
-        }
-        Paint.FontMetrics fontMetrics = paint.getFontMetrics();
-        height = fontMetrics.descent - fontMetrics.ascent;
-        return height;
     }
 }
