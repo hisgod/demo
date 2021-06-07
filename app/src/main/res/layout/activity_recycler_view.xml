@@ -1,15 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<layout>
 
-    <com.aib.view.ExpandTextView
-        android:id="@+id/tv"
+    <data>
+
+        <variable
+            name="data"
+            type="com.aib.view.Msg" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#f00"
-        app:textSize="15sp"
-        app:text="系统默认惯性滑动最大值mMaxFlingVelocity是8000，这个值是可以通过反射修改的。值越大，惯性滑动距离越远，越丝滑。因此，做了前面一套比较完善的哈把是白色的" />
-</LinearLayout>
+        android:layout_height="match_parent">
+
+        <!--  话说天下大势，分久必合，合久必分。周末七国分争，并入于秦。及秦灭之后，楚、汉分争，又并入于汉。汉朝自高祖斩白蛇而起义，一统天下，后来光武中兴，传至献帝，遂分为三国。  -->
+        <com.aib.view.ExpandTextView
+            android:id="@+id/tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="19dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:background="#f00"
+            app:endImage="@mipmap/ic_down"
+            app:lineSpacing="5dp"
+            app:startImage="@mipmap/ic_up"
+            app:text="@{data.data}"
+            app:textSize="15sp" />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/tv"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="16dp"-->
+        <!--            android:layout_marginLeft="16dp"-->
+        <!--            android:layout_marginTop="19dp"-->
+        <!--            android:layout_marginEnd="16dp"-->
+        <!--            android:layout_marginRight="16dp"-->
+        <!--            android:background="#f00"-->
+        <!--            android:lineSpacingMultiplier="3"-->
+        <!--            android:text="话说天下大势，分久必合，合久必分。周末七国分争，并入于秦。及秦灭之后，楚、汉分争，又并入于汉。汉朝自高祖斩白蛇而起义，一统天下，后来光武中兴，传至献帝，遂分为三国。" />-->
+    </LinearLayout>
+</layout>

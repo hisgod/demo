@@ -3,5 +3,8 @@
     <declare-styleable name="ExpandTextView">
         <attr name="text" format="string" />
         <attr name="textSize" format="dimension" />
+        <attr name="startImage" format="reference" />
+        <attr name="endImage" format="reference" />
+        <attr name="lineSpacing" format="dimension" />
     </declare-styleable>
 </resources>
